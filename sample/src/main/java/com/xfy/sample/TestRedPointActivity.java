@@ -51,10 +51,19 @@ public class TestRedPointActivity extends Activity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         if (v == button) {
-            if (bind) {
+            /*if (bind) {
                 RedPointManager.unbindActivity(this);
                 bind = false;
-            }
+            }*/
+            ValueAnimator anim = ValueAnimator.ofFloat(0, 90).setDuration(1000);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    final float v = (float) animation.getAnimatedValue();
+                    setViewRotate(v, textView, imageView, imageView2, imageView3);
+                }
+            });
+            anim.start();
             return;
         }
         bind = true;
