@@ -1,7 +1,6 @@
 package com.xfy.redpoint;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -10,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 
 import java.util.HashMap;
 
@@ -23,7 +23,9 @@ import java.util.HashMap;
  *  隐藏：{@link #hideRedPoint(View)}
  *  删除：{@link #removeRedPoint(View)}
  *  是否显示：{@link #isShowRedPoint(View)}
- * 目前仅支持红点以view中心点旋转 {@link #rotateRedPoint(View, float)} {@link #rotateRedPointByView(View)}
+ *  重设：{@link #resetRedPointBaseOnView(View)}
+ * 红点以view中心点旋转 {@link #rotateRedPoint(View, float)} {@link #rotateRedPointByView(View)}
+ * 红点位移 {@link #translateRedPoint(View, float, float)} {@link #translateRedPointByView(View)}
  * 可自定义红点样式{@link #setRedPointDrawableId(int)}
  * Activity onDestroy时务必调用 {@link #unbindActivity(Activity)}
  */
@@ -119,6 +121,25 @@ public class RedPointManager {
     }
 
     /**
+     * 根据上次设置的参数（gravity, xMargin, yMargin）重新设置红点的位置
+     * 可在View移动之后设置
+     * @param targetView
+     */
+    public void resetRedPointBaseOnView(final View targetView) {
+        final AnimatableDrawable redPoint = findRedPoint(targetView);
+        if (redPoint != null) {
+            redPointView.post(new Runnable() {
+                @Override
+                public void run() {
+                    redPoint.reset();
+                    initRedPoint(targetView, redPoint, redPoint.getGravity(), redPoint.getMarginX(), redPoint.getMarginY());
+                    redPointView.invalidate();
+                }
+            });
+        }
+    }
+
+    /**
      * 隐藏此view上的红点
      * @param targetView
      */
@@ -178,6 +199,28 @@ public class RedPointManager {
         redPoint.rotate(degree);
     }
 
+    /**
+     * 移动和targetView绑定的红点，移动距离为targetView的移动距离
+     * @param targetView
+     */
+    public void translateRedPointByView(View targetView) {
+        translateRedPoint(targetView, targetView.getTranslationX(), targetView.getTranslationY());
+    }
+
+    /**
+     * 移动和targetView绑定的红点
+     * @param targetView    目标view，如果没有找到对应的红点，返回
+     * @param tx        移动水平距离
+     * @param ty        移动竖直距离
+     */
+    public void translateRedPoint(View targetView, float tx, float ty) {
+        AnimatableDrawable redPoint = findRedPoint(targetView);
+        if (redPoint == null)
+            return;
+        redPoint.setTranslateX(tx);
+        redPoint.setTranslateY(ty);
+    }
+
     private void release() {
         redPointView.removeAllRedPoint();
         ViewParent parent = redPointView.getParent();
@@ -199,6 +242,8 @@ public class RedPointManager {
         Gravity.apply(gravity, redPoint.getIntrinsicWidth(), redPoint.getIntrinsicHeight(), rect, xMargin, yMargin, bounds);
         redPoint.setBounds(bounds);
         redPoint.setContainerRect(rect);
+        redPoint.setGravity(gravity);
+        redPoint.setMargin(xMargin, yMargin);
     }
 
     private void save(View targetView, AnimatableDrawable redPoint) {
@@ -218,8 +263,13 @@ public class RedPointManager {
         return parent.getResources().getDrawable(id);
     }
 
-    private int getStatusBarHeight(Context context) {
+    private int getStatusBarHeight(Activity context) {
         if (statusHeight != -404) {
+            return statusHeight;
+        }
+        int flags = context.getWindow().getAttributes().flags;
+        if ((flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+            statusHeight = 0;
             return statusHeight;
         }
         // 获得状态栏高度

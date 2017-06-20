@@ -21,6 +21,6 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile project(':library')
-//    compile 'com.xfy.redpoint:library:1.0'
+//    compile project(':library')
+    compile 'com.xfy.redpoint:library:1.1'
 }

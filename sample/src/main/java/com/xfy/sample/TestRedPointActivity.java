@@ -2,6 +2,7 @@ package com.xfy.sample;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -55,7 +56,7 @@ public class TestRedPointActivity extends Activity implements View.OnClickListen
                 RedPointManager.unbindActivity(this);
                 bind = false;
             }*/
-            ValueAnimator anim = ValueAnimator.ofFloat(0, 90).setDuration(1000);
+            /*ValueAnimator anim = ValueAnimator.ofFloat(0, 90).setDuration(1000);
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -63,7 +64,8 @@ public class TestRedPointActivity extends Activity implements View.OnClickListen
                     setViewRotate(v, textView, imageView, imageView2, imageView3);
                 }
             });
-            anim.start();
+            anim.start();*/
+            startActivity(new Intent(this, TestRedPointForFullScreen.class));
             return;
         }
         bind = true;

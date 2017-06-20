@@ -16,9 +16,13 @@ public class AnimatableDrawable extends Drawable {
     private Drawable mDrawable;
 
     private Rect containerRect;
+    private int gravity;
+    private int marginX, marginY;
 
     private float rotateDegree = 0;
     private float rotateCenterX = Float.NaN, rotateCenterY = Float.NaN;
+
+    private float translateX, translateY;
 
     public AnimatableDrawable(){
     }
@@ -32,6 +36,7 @@ public class AnimatableDrawable extends Drawable {
     public void draw(Canvas canvas) {
         if (mDrawable != null && isVisible()) {
             canvas.save();
+            canvas.translate(translateX, translateY);
             if (rotateDegree != 0 && !Float.isNaN(rotateCenterX) && !Float.isNaN(rotateCenterY))
                 canvas.rotate(rotateDegree, rotateCenterX, rotateCenterY);
             mDrawable.draw(canvas);
@@ -74,6 +79,24 @@ public class AnimatableDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public float getTranslateX() {
+        return translateX;
+    }
+
+    public void setTranslateX(float translateX) {
+        this.translateX = translateX;
+        invalidateSelf();
+    }
+
+    public float getTranslateY() {
+        return translateY;
+    }
+
+    public void setTranslateY(float translateY) {
+        this.translateY = translateY;
+        invalidateSelf();
+    }
+
     public float getRotateCenterX() {
         return rotateCenterX;
     }
@@ -86,6 +109,8 @@ public class AnimatableDrawable extends Drawable {
         rotateDegree = 0;
         rotateCenterY = Float.NaN;
         rotateCenterX = Float.NaN;
+        translateX = 0;
+        translateY = 0;
     }
 
     @Override
@@ -96,6 +121,27 @@ public class AnimatableDrawable extends Drawable {
 
     public void setContainerRect(Rect containerRect) {
         this.containerRect = containerRect;
+    }
+
+    public void setGravity(int gravity) {
+        this.gravity = gravity;
+    }
+
+    public void setMargin(int marginX, int marginY) {
+        this.marginX = marginX;
+        this.marginY = marginY;
+    }
+
+    public int getGravity() {
+        return gravity;
+    }
+
+    public int getMarginX() {
+        return marginX;
+    }
+
+    public int getMarginY() {
+        return marginY;
     }
 
     public Rect getContainerRect() {
