@@ -10,7 +10,7 @@ Android红点显示解决方案。
 `build.gradle`中添加:
 ```
 dependencies {
-    compile 'com.xfy.redpoint:library:1.0'
+    compile 'com.xfy.redpoint:library:1.1'
 }
 ```
 
@@ -28,8 +28,14 @@ RedPointManager.bindActivity(activity).hideRedPoint(targetView);
 //删除targetView上的红点
 RedPointManager.bindActivity(activity).removeRedPoint(targetView);
 
-//让红点以targetView中心点为中心旋转（目前只支持旋转，业务需要）
+//让红点以targetView中心点为中心旋转
 RedPointManager.bindActivity(activity).rotateRedPoint(targetView, degree);
+
+//让红点横向移动tx，纵向移动ty
+RedPointManager.bindActivity(activity).translateRedPoint(targetView,tx, ty);
+
+//重设红点，若view改变了位置，可调用此方法
+RedPointManager.bindActivity(activity).resetRedPointBaseOnView(targetView);
 
 //销毁
 RedPointManager.unbindActivity(activity);
